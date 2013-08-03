@@ -20,6 +20,7 @@ function comparator(predicate) {
         }
     };
 }
+
 function isLessOrEqual(x, y) {
     return x <= y;
 }
@@ -30,5 +31,12 @@ exports.testComparator = function (test) {
     var expectedSortedValues = [-108, -6, -1, 0, 2, 3, 10, 42];
     var results = values.sort(comparator(isLessOrEqual));
     test.deepEqual(results, expectedSortedValues);
+    test.done();
+};
+
+exports.testIsLessOrEqual = function (test) {
+    test.ok(isLessOrEqual(0, 1));
+    test.ok(isLessOrEqual(-1, 0));
+    test.ok(isLessOrEqual(1, 2));
     test.done();
 };
