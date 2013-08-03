@@ -20,7 +20,6 @@ function comparator(predicate) {
         }
     };
 }
-
 function isLessOrEqual(x, y) {
     return x <= y;
 }
