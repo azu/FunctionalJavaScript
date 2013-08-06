@@ -2,13 +2,20 @@
  * Created by azu on 2013/08/04.
  */
 "use strict";
-
+/*@
+    compareFunction で返す定数
+    [Array.prototype.sort - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort "Array.prototype.sort - JavaScript | MDN")
+ */
 var ComparisonResult = {
     ascending: -1,// <
     same: 0,
     descending: 1 // >
 };
-
+/*@
+    関数を返す関数 compareFunction を返す
+    高階関数 - Higher-Order Functions になるけど、
+    大文字から始まるみたいな見た目でわかる命名方法が欲しい気がする
+ */
 function comparator(predicate) {
     return function (x, y) {
         if (predicate(x, y)) {
@@ -20,7 +27,13 @@ function comparator(predicate) {
         }
     };
 }
+/*@
+ sortの実際の中身になる関数。
+ 真偽値 -> comparator を通して -> ``NSComparisonResult`` みたいな
+ ``<`` ``==`` ``>`` の3種類の状態にして使う。
 
+ 最初からsortに直接渡すよりも、小分けすることでテストのしやすさもアップする
+ */
 function isLessOrEqual(x, y) {
     return x <= y;
 }
