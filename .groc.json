@@ -1,4 +1,5 @@
 {
+    "index" : "readme.md",
     "glob": ["ch*/**/*.js"],
     "github": true
 }
