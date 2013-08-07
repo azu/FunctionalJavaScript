@@ -3,6 +3,19 @@
  */
 "use strict";
 var assert = require('chai').assert;
+
+
+describe("sort", function () {
+    it("引数なしで実行した場合", function () {
+        /*@
+         普通にsortすると数値順ではなくて辞書順になってしまう。
+         ``Comparator`` を使ってちゃんとSortを実装しよう というはなし
+         */
+        var results = [2, 3, -1, -6, 0, -108, 42, 10].sort();
+        assert.deepEqual(results, [-1, -108, -6, 0, 10, 2, 3, 42]);
+    });
+});
+
 /*@
  compareFunction で返す定数
  [Array.prototype.sort - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort "Array.prototype.sort - JavaScript | MDN")
@@ -33,11 +46,17 @@ function comparator(predicate) {
  真偽値 -> comparator を通して -> ``NSComparisonResult`` みたいな
  ``<`` ``==`` ``>`` の3種類の状態にして使う。
 
+ こういう関数は Predicates というらしい
+
+ > Functions that always return a Boolean value (i.e., true or false only), are called predicates.
+
  最初からsortに直接渡すよりも、小分けすることでテストのしやすさもアップする
+
  */
 function isLessOrEqual(x, y) {
     return x <= y;
 }
+
 
 describe("Comparator", function () {
     it("should return `function`", function () {
