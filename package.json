@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "description": "Functional JavaScript Practice",
   "main": "index.js",
-  "dependencies": {
-    "nodeunit": "~0.8.1"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,5 +11,9 @@
     "functional"
   ],
   "author": "azu",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2"
+  }
 }

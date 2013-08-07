@@ -2,9 +2,10 @@
  * Created by azu on 2013/08/04.
  */
 "use strict";
+var assert = require('chai').assert;
 /*@
-    compareFunction で返す定数
-    [Array.prototype.sort - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort "Array.prototype.sort - JavaScript | MDN")
+ compareFunction で返す定数
+ [Array.prototype.sort - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort "Array.prototype.sort - JavaScript | MDN")
  */
 var ComparisonResult = {
     ascending: -1,// <
@@ -12,9 +13,9 @@ var ComparisonResult = {
     descending: 1 // >
 };
 /*@
-    関数を返す関数 compareFunction を返す
-    高階関数 - Higher-Order Functions になるけど、
-    大文字から始まるみたいな見た目でわかる命名方法が欲しい気がする
+ 関数を返す関数 compareFunction を返す
+ 高階関数 - Higher-Order Functions になるけど、
+ 大文字から始まるみたいな見た目でわかる命名方法が欲しい気がする
  */
 function comparator(predicate) {
     return function (x, y) {
@@ -38,18 +39,26 @@ function isLessOrEqual(x, y) {
     return x <= y;
 }
 
-
-exports.testComparator = function (test) {
-    var values = [2, 3, -1, -6, 0, -108, 42, 10];
-    var expectedSortedValues = [-108, -6, -1, 0, 2, 3, 10, 42];
-    var results = values.sort(comparator(isLessOrEqual));
-    test.deepEqual(results, expectedSortedValues);
-    test.done();
-};
-
-exports.testIsLessOrEqual = function (test) {
-    test.ok(isLessOrEqual(0, 1));
-    test.ok(isLessOrEqual(-1, 0));
-    test.ok(isLessOrEqual(1, 2));
-    test.done();
-};
+describe("Comparator", function () {
+    it("should return `function`", function () {
+        var highOrderFunction = comparator(isLessOrEqual);
+        assert.typeOf(highOrderFunction, "function");
+    });
+    it("test sort", function () {
+        var values = [2, 3, -1, -6, 0, -108, 42, 10];
+        var expectedSortedValues = [-108, -6, -1, 0, 2, 3, 10, 42];
+        var results = values.sort(comparator(isLessOrEqual));
+        assert.deepEqual(results, expectedSortedValues);
+    });
+});
+describe("isLessOrEqual", function () {
+    it("test <", function () {
+        assert.ok(isLessOrEqual(0, 1));
+    });
+    it("test <, when 0", function () {
+        assert.ok(isLessOrEqual(-1, 0));
+    });
+    it("test <", function () {
+        assert.ok(isLessOrEqual(1, 2));
+    });
+});

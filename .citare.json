@@ -1,7 +1,0 @@
-{
-    "index": "readme.md",
-    "glob": ["ch*/**/*.js", "readme.md", "ch*/**/readme.md"],
-    "except": ["**/node_modules/**/*", "doc/**/*"],
-    "github": true,
-    "repository-url": "https://github.com/azu/FunctionalJavaScript"
-}
