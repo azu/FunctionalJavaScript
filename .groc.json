@@ -1,6 +1,6 @@
 {
     "index": "readme.md",
-    "glob": ["Chapter*/**/*.js", "readme.md", "Chapter*/**/readme.md"],
+    "glob": ["Chapter*/**/*.js", "readme.md"],
     "except": ["**/node_modules/**/*", "doc/**/*"],
     "repository-url": "https://github.com/azu/FunctionalJavaScript"
 }

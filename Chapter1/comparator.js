@@ -26,7 +26,8 @@ var ComparisonResult = {
     descending: 1 // >
 };
 /*
- 関数を返す関数 compareFunction を返す
+ 関数を返す関数 compareFunction を返す。
+
  高階関数 - Higher-Order Functions になるけど、
  大文字から始まるみたいな見た目でわかる命名方法が欲しい気がする
  */
@@ -43,6 +44,7 @@ function comparator(predicate) {
 }
 /*
  sortの実際の中身になる関数。
+
  真偽値 -> comparator を通して -> ``NSComparisonResult`` みたいな
  ``<`` ``==`` ``>`` の3種類の状態にして使う。
 

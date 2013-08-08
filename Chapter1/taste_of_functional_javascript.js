@@ -12,7 +12,6 @@ function truthy(x) {
     return (x !== false) && existy(x);
 }
 
-
 describe("Existy", function () {
     it("nullじゃないならtrue", function () {
         var expected = [false, false, true, true, true];
