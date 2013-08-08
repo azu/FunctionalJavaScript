@@ -104,3 +104,15 @@ describe("filter", function () {
         assert.deepEqual(result, ["a", "b", "d"]);
     });
 });
+
+/*
+    concatをargumensでやる関数を作ってみよう
+*/
+function cat(){
+    var head = _.first(arguments);
+    if(head != null) {
+        return head.concat.apply(head, _.rest(arguments));
+    }else{
+        return [];
+    }
+}
