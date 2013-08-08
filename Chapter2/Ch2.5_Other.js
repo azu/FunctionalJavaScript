@@ -25,7 +25,7 @@ function allOf() {
 function anyOf() {
     return _.reduceRight(arguments, function (truth, fn) {
         return truth || fn();
-    }, false);// デフォルトはtrue
+    }, false);// デフォルトはfalse
 }
 
 function T() {
@@ -78,8 +78,7 @@ describe("anyOf", function () {
 
 
 /*
-    **reject** は predicateがtrueじゃないものを弾いたものを返すが、
-    これを、あえて **filter** を使って実装してみるのはどうだろ?
+    **reject** は predicateがtrueじゃないものを弾いたものを返す
 */
 describe("reject", function () {
     it("example", function () {
@@ -88,7 +87,8 @@ describe("reject", function () {
     });
 });
 /*
-    求めるのは、predicateの返り値を逆転させるHigher-Order Functions
+    これを、あえて **filter** を使って実装してみるのはどうだろ?
+    必要なのはpredicateの返り値を逆転させるHigher-Order Functions。
     ``complement`` という関数を作ってみよう
 */
 function complement(predicate) {
@@ -105,14 +105,3 @@ describe("filter", function () {
     });
 });
 
-/*
-    concatをargumensでやる関数を作ってみよう
-*/
-function cat(){
-    var head = _.first(arguments);
-    if(head != null) {
-        return head.concat.apply(head, _.rest(arguments));
-    }else{
-        return [];
-    }
-}
