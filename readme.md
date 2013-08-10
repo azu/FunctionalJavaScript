@@ -4,6 +4,9 @@ My codes of [Functional JavaScript](http://www.functionaljavascript.com/ "Functi
 
 Original code is [Here](https://github.com/funjs/book-source "Functional").
 
+Errata :
+
+* [Functional JavaScript Confirmed Errata | O'Reilly Media](http://oreilly.com/catalog/errata.csp?isbn=0636920028857 "Functional JavaScript Confirmed Errata | O'Reilly Media")
 
 ## メモ
 
