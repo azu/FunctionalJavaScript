@@ -2,7 +2,7 @@
  * Created by azu on 2013/08/04.
  */
 "use strict";
-var assert = require('chai').assert;
+var assert = require('power-assert');
 
 
 describe("sort", function () {
@@ -63,7 +63,7 @@ function isLessOrEqual(x, y) {
 describe("Comparator", function () {
     it("should return `function`", function () {
         var highOrderFunction = comparator(isLessOrEqual);
-        assert.typeOf(highOrderFunction, "function");
+        assert(typeof highOrderFunction === "function");
     });
     it("test sort", function () {
         var values = [2, 3, -1, -6, 0, -108, 42, 10];

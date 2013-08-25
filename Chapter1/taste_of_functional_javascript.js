@@ -2,7 +2,7 @@
  * Created by azu on 2013/08/04.
  */
 "use strict";
-var assert = require("assert");
+var assert = require('power-assert');
 
 function existy(x) {
     return x != null;
