@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git checkout -b gh-pages
+git checkout -B gh-pages
 git rebase master
 citare --out "./"
 git add -u
