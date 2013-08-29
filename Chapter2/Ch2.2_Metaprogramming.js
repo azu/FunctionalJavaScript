@@ -23,8 +23,7 @@ function Point3D(x, y, z) {
 // do
 (function () {
     var point2D = new Point2D(0, 1);
-    console.log(point2D);
-
+    //    { _x: 0, _y: 1 }
     var point3D = new Point3D(10, -1, 100);
-    console.log(point3D);
+    //    { _x: 10, _y: -1, _z: 100 }
 })();

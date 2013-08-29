@@ -24,7 +24,6 @@ var construct = require("../lib/construct.js").construct;
     var values = _.pluck(_.map(books, function (obj) {
         return _.defaults(obj, {author: "Unknown"});
     }), "author");
-    console.log("values", values);
 })();
 
 /*
