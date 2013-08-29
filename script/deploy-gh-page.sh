@@ -6,5 +6,5 @@ citare --out "./"
 git add -u
 git add .
 printf "${MESSAGE}\n\n%s" "`git diff --cached`" | git commit -F -
-git push origin gh-pages
+git push -f origin gh-pages
 git checkout -

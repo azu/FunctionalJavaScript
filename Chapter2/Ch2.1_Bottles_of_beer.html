@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><title>Chapter2/Ch2.1_Bottles_of_beer</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="citare-relative-root" content="../"><meta name="citare-document-path" content="Chapter2/Ch2.1_Bottles_of_beer"><meta name="citare-project-path" content="Chapter2/Ch2.1_Bottles_of_beer.js"><meta name="citare-github-url" content="https://github.com/azu/FunctionalJavaScript"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="bg"></div><div id="meta"><div class="file-path"><a href="https://github.com/azu/FunctionalJavaScript/blob/master/Chapter2/Ch2.1_Bottles_of_beer.js">Chapter2/Ch2.1_Bottles_of_beer.js</a></div></div><div id="document" class="codedoc"><div class="segment"><div class="comments"><div class="wrapper"><p> Created by azu on 2013/08/07.</p></div></div><div class="code"><div class="wrapper"><span class="keyword">var</span> assert = require(<span class="string">'chai'</span>).assert;
+<span class="keyword">var</span> _ = require(<span class="string">"underscore"</span>);</div></div></div><div class="segment nocode"><div class="comments"><div class="wrapper"><ul>
+<li>Start at 99</li>
+<li>Sing the following for each number down to 1:<ul>
+<li>X bottles of beer on the wall</li>
+<li>X bottles of beer</li>
+<li>Take one down, pass it around</li>
+<li>X-1 bottles of beer on the wall</li>
+</ul>
+</li>
+<li>Subtract one from the last number and start over with the new value</li>
+<li>When you finally get to the number 1, sing the following last line instead:<ul>
+<li>No more bottles of beer on the wall</li>
+</ul>
+</li>
+</ul></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>素の命令形のプログラミング Imperative Programmingで書くと</p></div></div><div class="code"><div class="wrapper">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="string">"use strict"</span>;
+    <span class="keyword">var</span> lyrics = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> bottles = <span class="number">99</span>; bottles &gt; <span class="number">0</span>; bottles--) {
+        lyrics.push(bottles + <span class="string">" bottles of beer on the wall"</span>);
+        lyrics.push(bottles + <span class="string">" bottles of beer"</span>);
+        lyrics.push(<span class="string">"Take one down, pass it around"</span>);
+        <span class="keyword">if</span> (bottles &gt; <span class="number">1</span>) {
+            lyrics.push((bottles - <span class="number">1</span>) + <span class="string">" bottles of beer on the wall"</span>);
+        } <span class="keyword">else</span> {
+            lyrics.push(<span class="string">"No more bottles of beer on the wall!"</span>);
+        }
+    }
+})();</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>関数型スタイルで実装してみる</p></div></div><div class="code"><div class="wrapper">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="string">"use strict"</span>;</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>ロジックとなる部分の関数</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">lyricSegment</span><span class="params">(n)</span> {</span>
+        <span class="keyword">return</span> _.chain([])
+            .push(n + <span class="string">" bottles of beer on the wall"</span>)
+            .push(n + <span class="string">" bottles of beer"</span>)
+            .push(<span class="string">"Take one down, pass it around"</span>)
+            .tap(<span class="function"><span class="keyword">function</span> <span class="params">(lyrics)</span> {</span>
+                <span class="keyword">if</span> (n &gt; <span class="number">1</span>) {
+                    lyrics.push((n - <span class="number">1</span>) + <span class="string">" bottles of beer on the wall"</span>);
+                } <span class="keyword">else</span> {
+                    lyrics.push(<span class="string">"No more bottles of beer on the wall!"</span>);
+                }
+            }).value();
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">song</span><span class="params">(start, end, lyricGen)</span> {</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>99…1 の配列を作成</p></div></div><div class="code"><div class="wrapper">        <span class="keyword">var</span> arr = _.range(start, end, -<span class="number">1</span>);
+        <span class="keyword">return</span> _.reduce(arr, <span class="function"><span class="keyword">function</span> <span class="params">(memo, n)</span> {</span>
+            <span class="keyword">return</span> memo.concat(lyricGen(n));
+        }, []);
+    }
+
+    describe(<span class="string">"song"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        context(<span class="string">"when 99..1"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            before(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+                <span class="keyword">this</span>.results = song(<span class="number">99</span>, <span class="number">0</span>, lyricSegment);
+            });
+            it(<span class="string">"should have count Of 99 * 4"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+                assert.lengthOf(<span class="keyword">this</span>.results, <span class="number">99</span> * <span class="number">4</span>);
+            });
+        });
+    });
+})();</div></div></div><div id="segment-footer"><div id="footer"><a href="https://github.com/druide/citare-scriptum" target="_blank">Generated by Citare scriptum</a></div></div></div></body></html>

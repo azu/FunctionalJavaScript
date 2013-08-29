@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"><head><title>Chapter2/Ch2.7_Data_Thinking</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="citare-relative-root" content="../"><meta name="citare-document-path" content="Chapter2/Ch2.7_Data_Thinking"><meta name="citare-project-path" content="Chapter2/Ch2.7_Data_Thinking.js"><meta name="citare-github-url" content="https://github.com/azu/FunctionalJavaScript"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="bg"></div><div id="meta"><div class="file-path"><a href="https://github.com/azu/FunctionalJavaScript/blob/master/Chapter2/Ch2.7_Data_Thinking.js">Chapter2/Ch2.7_Data_Thinking.js</a></div></div><div id="document" class="codedoc"><div class="segment"><div class="comments"><div class="wrapper"><p> Created by azu on 2013/08/10.</p></div></div><div class="code"><div class="wrapper"><span class="string">"use strict"</span>;
+<span class="keyword">var</span> assert = require(<span class="string">'chai'</span>).assert;
+<span class="keyword">var</span> _ = require(<span class="string">"underscore"</span>);
+<span class="keyword">var</span> construct = require(<span class="string">"../lib/construct.js"</span>).construct;</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>_.pluck</code>はひとつでも、そのkeyを持ってないものがあると、
+例外を吐いてしまうので、 <code>_.defaults</code>でデフォルト値を設定してから取り出す</p></div></div><div class="code"><div class="wrapper">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">var</span> books = [
+        {
+            title: <span class="string">"Chthon"</span>, author: <span class="string">"Anthny"</span>
+        },
+        {
+            title: <span class="string">"Grendel"</span>, author: <span class="string">"Garder"</span>
+        },
+        {
+            title: <span class="string">"After Dark"</span>
+        }
+    ];
+    <span class="keyword">var</span> values = _.pluck(_.map(books, <span class="function"><span class="keyword">function</span> <span class="params">(obj)</span> {</span>
+        <span class="keyword">return</span> _.defaults(obj, {author: <span class="string">"Unknown"</span>});
+    }), <span class="string">"author"</span>);
+})();</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Underscore.js にはデータを色々 pick する関数が充実してる。</p>
+<p><code>_.pluck</code> は Objective-Cの <code>valueKeyFor</code> みたいな感じで、keyに一致するValueを配列として取れる。</p>
+<p>これを応用する話をTableのようなデータから色々取り出す関数を作りながら見てみる</p></div></div><div class="code"><div class="wrapper">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span></div></div></div><div class="segment nocode"><div class="comments"><div class="wrapper"><p>ここではこのような <code>{Array.&lt;Object&gt;}</code> の配列を <code>table</code> と読んでる</p>
+<p>いわゆる表っぽいオブジェクト</p></div></div></div><div class="segment nocode"><div class="comments"><div class="wrapper"><p> @typedef {Object} Book
+ @property title
+ @property isbn
+ @property ed</p></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p> @type {Array.<Book>}</p></div></div><div class="code"><div class="wrapper">    <span class="keyword">var</span> library = [
+        {title: <span class="string">"SICP"</span>, isbn: <span class="string">"0262010771"</span>, ed: <span class="number">1</span>},
+        {title: <span class="string">"SICP"</span>, isbn: <span class="string">"0262510871"</span>, ed: <span class="number">2</span>},
+        {title: <span class="string">"Joy of Clojure"</span>, isbn: <span class="string">"1935182641"</span>, ed: <span class="number">1</span>}
+    ];</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>pluckは便利だが、ひとつのkeyしか扱えないので、SQLのSELECTみたいなもう少し柔軟なものが欲しい。</p></div></div><div class="code"><div class="wrapper">    it(<span class="string">"pluckの威力"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">var</span> values = _.pluck(library, <span class="string">"title"</span>);
+        assert.deepEqual(values, [<span class="string">"SICP"</span>, <span class="string">"SICP"</span>, <span class="string">"Joy of Clojure"</span>]);
+    });</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>project</code> は複数のkeyが取れる <code>_.pick</code> みたいな関数</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">project</span><span class="params">(table, keys)</span> {</span>
+        <span class="keyword">return</span> _.map(table, <span class="function"><span class="keyword">function</span> <span class="params">(obj)</span> {</span>
+            <span class="keyword">return</span> _.pick.apply(<span class="literal">null</span>, construct(obj, keys));
+        });
+    }</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><span class="autolink">[ { title: ‘SICP’, isbn: ‘0262010771’ },
+  { title: ‘SICP’, isbn: ‘0262510871’ },
+  { title: ‘Joy of Clojure’, isbn: ‘1935182641’ } ]</span></p></div></div><div class="code"><div class="wrapper">    <span class="keyword">var</span> result = project(library, [<span class="string">"title"</span>, <span class="string">"isbn"</span>]);</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>SQLでいう AS に該当する rename しながら値を取り出すものを実装したいとする</p>
+<blockquote>
+<p>SELECT ed AS edition Form library</p>
+</blockquote>
+<p>まずは、<code>table</code> ではなくてobject単位でrenameをする関数を作る</p>
+<p><code>ed</code> を <code>edition</code> というkeyにリネームして取り出す</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">rename</span><span class="params">(obj, newNames)</span> {</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>_.omitはいわゆるブラックリストでkeyをフィルタする</p>
+<pre><code><span class="brief">    ``` <span class="attribute">js
+    </span>_.omit({<span class="attribute">name : '</span>moe', <span class="attribute">age : </span>50, <span class="attribute">userid : '</span>moe1'}, 'userid');
+    =&gt; {<span class="attribute">name : '</span>moe', <span class="attribute">age : </span>50}
+    ```
+
+    名前を変更するのは、newNamesのもののみなので最初にそれを取り出して置く</span></code></pre></div></div><div class="code"><div class="wrapper">        <span class="keyword">var</span> placeholder = _.omit.apply(<span class="literal">null</span>, construct(obj, _.keys(newNames)));</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>placeholder</code> を元にobjを書き換える</p></div></div><div class="code"><div class="wrapper">        <span class="keyword">return</span> _.reduce(newNames, <span class="function"><span class="keyword">function</span> <span class="params">(localObject, newKey, oldKey)</span> {</span>
+            <span class="keyword">if</span> (_.has(obj, oldKey)) {
+                localObject[newKey] = obj[oldKey];
+                <span class="keyword">return</span> localObject;
+            } <span class="keyword">else</span> {
+                <span class="keyword">return</span> localObject;
+            }
+        }, placeholder);
+    }
+
+    describe(<span class="string">"rename"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return renamaed object"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            <span class="keyword">var</span> newObject = rename({<span class="string">"a"</span>: <span class="number">1</span>, <span class="string">"b"</span>: <span class="number">1</span>}, {<span class="string">"a"</span>: <span class="string">"newName"</span>});
+            assert.sameMembers(_.keys(newObject), [<span class="string">"newName"</span>, <span class="string">"b"</span>]);
+        });
+    });</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>これを元に 先ほどの AS を実装する</p>
+<p>tableのColumnをrenameする関数</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">as</span><span class="params">(table, newNames)</span> {</span>
+        <span class="keyword">return</span> _.map(table, <span class="function"><span class="keyword">function</span> <span class="params">(obj)</span> {</span>
+            <span class="keyword">return</span> rename(obj, newNames);
+        });
+    }
+
+    describe(<span class="string">"as"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"rename table Column name"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            <span class="keyword">var</span> result = as(library, {ed: <span class="string">"edition"</span>});
+            <span class="keyword">var</span> expect = [
+                {title: <span class="string">"SICP"</span>, isbn: <span class="string">"0262010771"</span>, edition: <span class="number">1</span>},
+                {title: <span class="string">"SICP"</span>, isbn: <span class="string">"0262510871"</span>, edition: <span class="number">2</span>},
+                {title: <span class="string">"Joy of Clojure"</span>, isbn: <span class="string">"1935182641"</span>, edition: <span class="number">1</span>}
+            ];
+            assert.deepEqual(result, expect);
+        });
+    });</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>で、 as だけだと SQLのASとはちょっと違って、SELECTの動作がないので、</p>
+<p>最初に作った <code>project</code> と一緒に使うと、同じようになる</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">selectAs</span><span class="params">(table, renameObject)</span> {</span>
+        <span class="keyword">var</span> values = _.values(renameObject);
+        <span class="keyword">return</span> project(as(library, renameObject), values);
+    }
+
+    describe(<span class="string">"selectAs"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return renamed object"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            <span class="keyword">var</span> results = selectAs(library, {
+                ed: <span class="string">"edition"</span>
+            });
+            <span class="keyword">var</span> expects = [
+                {
+                    edition: <span class="number">1</span>
+                },
+                {
+                    edition: <span class="number">2</span>
+                },
+                {
+                    edition: <span class="number">1</span>
+                }
+            ];
+            assert.deepEqual(results, expects);
+        });
+    });</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>次は SQL の <code>WHERE</code> にあたる部分を作ってみよう。</p>
+<p>Applicative natureとしてpredicateとなる関数を受ける関数とする</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">restrict</span><span class="params">(table, predicate)</span> {</span>
+        <span class="keyword">return</span> _.reduce(table, <span class="function"><span class="keyword">function</span> <span class="params">(newTable, obj)</span> {</span>
+            <span class="keyword">if</span> (predicate(obj)) {
+                <span class="keyword">return</span> newTable;
+            } <span class="keyword">else</span> {
+                <span class="keyword">return</span> _.without(newTable, obj);
+            }
+        }, table);
+    }</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p> @param {Book} book
+ @returns {boolean}</p></div></div><div class="code"><div class="wrapper">    <span class="function"><span class="keyword">function</span> <span class="title">isNotFirstEdition</span><span class="params">(book)</span>{</span>
+        <span class="keyword">return</span> book.ed &gt; <span class="number">1</span>;
+    }
+    describe(<span class="string">"restrict"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should filter by predicate"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><pre><code class="sql"><span class="operator"><span class="keyword">SELECT</span> title, isbn, edition <span class="keyword">FROM</span> library
+<span class="keyword">WHERE</span> edition &gt; <span class="number">1</span>;</span></code></pre>
+<p>と同様</p></div></div><div class="code"><div class="wrapper">            <span class="keyword">var</span> results = restrict(library, isNotFirstEdition);
+            <span class="keyword">var</span> expect = [
+                {title: <span class="string">"SICP"</span>, isbn: <span class="string">"0262510871"</span>, ed: <span class="number">2</span>}
+            ];
+            assert.deepEqual(results, expect);
+        });
+    });
+})();</div></div></div><div id="segment-footer"><div id="footer"><a href="https://github.com/druide/citare-scriptum" target="_blank">Generated by Citare scriptum</a></div></div></div></body></html>

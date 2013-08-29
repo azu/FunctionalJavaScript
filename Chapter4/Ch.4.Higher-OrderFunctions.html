@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="en"><head><title>Chapter4/Ch.4.Higher-OrderFunctions</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="citare-relative-root" content="../"><meta name="citare-document-path" content="Chapter4/Ch.4.Higher-OrderFunctions"><meta name="citare-project-path" content="Chapter4/Ch.4.Higher-OrderFunctions.js"><meta name="citare-github-url" content="https://github.com/azu/FunctionalJavaScript"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="bg"></div><div id="meta"><div class="file-path"><a href="https://github.com/azu/FunctionalJavaScript/blob/master/Chapter4/Ch.4.Higher-OrderFunctions.js">Chapter4/Ch.4.Higher-OrderFunctions.js</a></div></div><div id="document" class="codedoc"><div class="segment"><div class="comments"><div class="wrapper"><p> Created by azu on 2013/08/29.</p></div></div><div class="code"><div class="wrapper"><span class="string">"use strict"</span>;
+
+<span class="keyword">var</span> assert = require(<span class="string">'chai'</span>).assert;
+<span class="keyword">var</span> _ = require(<span class="string">"underscore"</span>);
+
+<span class="keyword">var</span> plucker = require(<span class="string">"../lib/plucker.js"</span>).plucker;</div></div></div><div class="segment nocode"><div class="comments"><div class="wrapper"><p>関数を取る関数 - 高階関数
+が関数型スタイルプログラミングでとても大事な概念.</p>
+<p>すでに mapやreduceなどで見たきたけど、もっともっと色々な事をやっていく</p></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>まずは典型的な例として <code>max</code> を見ていく</p></div></div><div class="code"><div class="wrapper">it(<span class="string">"max example"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    assert.equal(_.max([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]), <span class="number">5</span>);
+});</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>_.max</code> は 配列内から最大値をとれるが、
+これもhigher-orderな関数で、第二引数に関数を取れる。</p></div></div><div class="code"><div class="wrapper">it(<span class="string">"second argument"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">var</span> people = [
+        {name: <span class="string">"Fred"</span>, age: <span class="number">65</span>},
+        {name: <span class="string">"Lucy"</span>, age: <span class="number">36</span>}
+    ];</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>maxは常にgreater than &gt; で比較していく感じ</p></div></div><div class="code"><div class="wrapper">    <span class="keyword">var</span> oldPerson = _.max(people, <span class="function"><span class="keyword">function</span> <span class="params">(p)</span> {</span>
+        <span class="keyword">return</span> p.age;
+    });
+    assert.deepEqual(oldPerson, {name: <span class="string">"Fred"</span>, age: <span class="number">65</span>});
+});</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>finder</code> という関数を考えてみる</p>
+<ol>
+<li>比較できる値を作る関数</li>
+<li>比較してbestな値を返す</li>
+</ol></div></div><div class="code"><div class="wrapper"><span class="function"><span class="keyword">function</span> <span class="title">finder</span><span class="params">(valueFun, bestFun, all)</span> {</span>
+    <span class="keyword">return</span> _.reduce(all, <span class="function"><span class="keyword">function</span> <span class="params">(best, current)</span> {</span>
+        <span class="keyword">var</span> bestValue = valueFun(best);
+        <span class="keyword">var</span> currentValue = valueFun(current);
+        <span class="keyword">return</span> (bestValue === bestFun(bestValue, currentValue)) ? best : current;
+    })
+}</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>この <code>finder</code> で <code>_.max</code> と同様のことをやってみよう</p></div></div><div class="code"><div class="wrapper">describe(<span class="string">"finder"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    it(<span class="string">"is best max"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">var</span> all = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>_.identity</code> は受け取った値をそのまま返す関数</p>
+<p>一見意味がない関数に見えるけど、関数型プログラミングの領域では、関数で考えるので必要になる。
+underscoreの中ではデフォルトのイテレータとして使われてる。</p></div></div><div class="code"><div class="wrapper">        <span class="keyword">var</span> maxValue = finder(_.identity, Math.max, all);
+        assert.equal(maxValue, _.max(all));
+    });</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>_.max</code> の第二引数と同じような感じでやる場合</p></div></div><div class="code"><div class="wrapper">    <span class="keyword">var</span> people = [
+        {name: <span class="string">"Fred"</span>, age: <span class="number">65</span>},
+        {name: <span class="string">"Lucy"</span>, age: <span class="number">36</span>}
+    ];
+    it(<span class="string">"valueFun is plucker"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">var</span> results = finder(plucker(<span class="string">"age"</span>), Math.max, people);
+        assert.deepEqual(results, {name: <span class="string">"Fred"</span>, age: <span class="number">65</span>});
+    });
+    it(<span class="string">"pluck name"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+
+        <span class="function"><span class="keyword">function</span> <span class="title">isStartWith</span><span class="params">(CHAR)</span> {</span>
+            <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">(x, y)</span> {</span>
+                <span class="keyword">return</span> x.charAt(<span class="number">0</span>) === CHAR ? x : y;
+            }
+        }</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>This Function of course prefers names that start with the letter L.</p>
+<p>という関数になる</p></div></div><div class="code"><div class="wrapper">        <span class="keyword">var</span> results = finder(plucker(<span class="string">"name"</span>), isStartWith(<span class="string">"L"</span>), people);
+        assert.deepEqual(results, {name: <span class="string">"Lucy"</span>, age: <span class="number">36</span>});
+    });
+});</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><code>finder</code> という関数を作ったけど、</p>
+<p><code>return x.charAt(0) === CHAR ? x : y;</code> と</p>
+<p><code>return (bestValue === bestFun(bestValue, currentValue)) ? best : current;</code></p>
+<p>でロジックが重複しているように見える。</p>
+<p>これは <code>finder</code> じたいに</p>
+<ul>
+<li><code>bestFun</code> は x &gt; y であること</li>
+<li><p>どうやって値を取り出すかを決める <code>valueFun</code></p>
+<p>というのが入ってるからである。</p>
+<p>もっときれいな感じに <code>best</code> を実装してみよう</p>
+</li>
+</ul></div></div><div class="code"><div class="wrapper"><span class="function"><span class="keyword">function</span> <span class="title">best</span><span class="params">(fn, coll)</span> {</span>
+    <span class="keyword">return</span> _.reduce(coll, <span class="function"><span class="keyword">function</span> <span class="params">(x, y)</span> {</span>
+        <span class="keyword">return</span> fn(x, y) ? x : y;
+    });
+}
+
+describe(<span class="string">"best"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    it(<span class="string">"is best"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">var</span> all = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+        <span class="keyword">var</span> maxValue = best(<span class="function"><span class="keyword">function</span> <span class="params">(x, y)</span> {</span>
+            <span class="keyword">return</span> x &gt; y;
+        }, all);
+        assert.equal(maxValue, _.max(all));
+    });
+
+});</div></div></div><div id="segment-footer"><div id="footer"><a href="https://github.com/druide/citare-scriptum" target="_blank">Generated by Citare scriptum</a></div></div></div></body></html>

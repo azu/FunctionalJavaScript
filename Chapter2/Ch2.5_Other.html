@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><title>Chapter2/Ch2.5_Other</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="citare-relative-root" content="../"><meta name="citare-document-path" content="Chapter2/Ch2.5_Other"><meta name="citare-project-path" content="Chapter2/Ch2.5_Other.js"><meta name="citare-github-url" content="https://github.com/azu/FunctionalJavaScript"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="bg"></div><div id="meta"><div class="file-path"><a href="https://github.com/azu/FunctionalJavaScript/blob/master/Chapter2/Ch2.5_Other.js">Chapter2/Ch2.5_Other.js</a></div></div><div id="document" class="codedoc"><div class="segment"><div class="comments"><div class="wrapper"><p> Created by azu on 2013/08/08.</p></div></div><div class="code"><div class="wrapper"><span class="string">"use strict"</span>;
+<span class="keyword">var</span> assert = require(<span class="string">'chai'</span>).assert;
+<span class="keyword">var</span> _ = require(<span class="string">"underscore"</span>);</div></div></div><div class="segment nocode"><div class="comments"><div class="wrapper"><p>reduceRightを使ってみる</p>
+<p>reduceの兄弟的な関数、この例は別にreduce使っても問題ないし</p></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>引数に渡した関数を呼び出した結果が全部trueなら、trueを返す</p></div></div><div class="code"><div class="wrapper"><span class="function"><span class="keyword">function</span> <span class="title">allOf</span><span class="params">()</span> {</span>
+    <span class="keyword">return</span> _.reduceRight(arguments, <span class="function"><span class="keyword">function</span> <span class="params">(truth, fn)</span> {</span>
+        <span class="keyword">return</span> truth &amp;&amp; fn();
+    }, <span class="literal">true</span>);<span class="comment">// デフォルトはtrue</span>
+}</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>引数に渡した関数を呼び出した結果で一つでもtrueなら、trueを返す</p></div></div><div class="code"><div class="wrapper"><span class="function"><span class="keyword">function</span> <span class="title">anyOf</span><span class="params">()</span> {</span>
+    <span class="keyword">return</span> _.reduceRight(arguments, <span class="function"><span class="keyword">function</span> <span class="params">(truth, fn)</span> {</span>
+        <span class="keyword">return</span> truth || fn();
+    }, <span class="literal">false</span>);<span class="comment">// デフォルトはfalse</span>
+}
+
+<span class="function"><span class="keyword">function</span> <span class="title">T</span><span class="params">()</span> {</span>
+    <span class="keyword">return</span> <span class="literal">true</span>;
+}
+<span class="function"><span class="keyword">function</span> <span class="title">F</span><span class="params">()</span> {</span>
+    <span class="keyword">return</span> <span class="literal">false</span>;
+}
+
+describe(<span class="string">"allOf"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    context(<span class="string">"when arguments is empty"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return true"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isTrue(allOf());
+        });
+    });
+    context(<span class="string">"when all arguments is T"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return true"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isTrue(allOf(T, T, T));
+        });
+    });
+    context(<span class="string">"when arguments contain F"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return false"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isFalse(allOf(T, T, F));
+        });
+    });
+});
+
+describe(<span class="string">"anyOf"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    context(<span class="string">"when arguments is empty"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return false"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isFalse(anyOf());
+        });
+    });
+    context(<span class="string">"when all arguments is T"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return true"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isTrue(anyOf(T, T, T));
+        });
+    });
+    context(<span class="string">"when all arguments is F"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return false"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isFalse(anyOf(F, F, F));
+        });
+    });
+    context(<span class="string">"when arguments contain T"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        it(<span class="string">"should return true"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+            assert.isTrue(anyOf(T, F, F));
+        });
+    });
+});</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p><em>reject*</em> は predicateがtrueじゃないものを弾いたものを返す</p></div></div><div class="code"><div class="wrapper">describe(<span class="string">"reject"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    it(<span class="string">"example"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">var</span> result = _.reject([<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="number">3</span>, <span class="string">"d"</span>], _.isNumber);
+        assert.deepEqual(result, [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"d"</span>]);
+    });
+});</div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>これを、あえて <strong>filter</strong> を使って実装してみるのはどうだろ?
+必要なのはpredicateの返り値を逆転させるHigher-Order Functions。
+<code>complement</code> という関数を作ってみよう</p></div></div><div class="code"><div class="wrapper"><span class="function"><span class="keyword">function</span> <span class="title">complement</span><span class="params">(predicate)</span> {</span>
+    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">return</span> !predicate.apply(<span class="literal">null</span>, _.toArray(arguments));
+    }
+}
+
+describe(<span class="string">"filter"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    it(<span class="string">"is same reject"</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>isNumberではないものだけをと出すという事ができる</p></div></div><div class="code"><div class="wrapper">        <span class="keyword">var</span> result = _.filter([<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="number">3</span>, <span class="string">"d"</span>], complement(_.isNumber));
+        assert.deepEqual(result, [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"d"</span>]);
+    });
+});</div></div></div><div id="segment-footer"><div id="footer"><a href="https://github.com/druide/citare-scriptum" target="_blank">Generated by Citare scriptum</a></div></div></div></body></html>
