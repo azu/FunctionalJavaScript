@@ -18,7 +18,7 @@ var existy = require("../lib/existy.js").existy;
     // something({a: null });
 })();
 /*
-こういうのチェックするために ``fnull`` というカンスを考える。
+こういうのチェックするために ``fnull`` という関数を考える。
 
 ``fnull`` はnullチェックをして、ちゃんと値があるならそのまま、ないならデフォルト値を使う。
 
@@ -42,5 +42,38 @@ describe("fnull", function () {
         var nums = [1, 2, 3, null, 5];
         var total = _.reduce(nums, safeMult);
         assert.equal(total, 30);
+    });
+});
+
+/*
+配列にfalsyが混じっていた場合はfnullで、次はオブジェクトにnullが指定されていた場合に、
+同じような昨日を指せる ``defaults`` という関数を考える
+ */
+
+function defaults(obj) {
+    return function (localObj, key) {
+        var val = fnull(_.identity, obj[key]);// d[key]がデフォルト値
+        return localObj && val(localObj[key]);
+    }
+}
+describe("defaults", function () {
+    it("safeなオブジェクト", function () {
+        /*
+        criticalの値を返す単純な関数
+         */
+        function doSomething(config) {
+            /*
+                criticalのデフォルト値を100としている
+             */
+            var lookup = defaults({critical: 100});
+            return lookup(config, 'critical');
+        }
+
+        var res_1 = doSomething({critical: 9});
+        assert.equal(res_1, 9);
+
+        var res_2 = doSomething({});
+        assert.equal(res_2, 100);
+
     });
 });
