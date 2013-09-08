@@ -56,6 +56,12 @@ function defaults(obj) {
         return localObj && val(localObj[key]);
     }
 }
+
+/*
+    defaultsのような仕組みは直接値にアクセスする前に一つレイヤーを挟めるのが便利
+
+    関数型スタイルはこういうカプセル化がやりやすい
+ */
 describe("defaults", function () {
     it("safeなオブジェクト", function () {
         /*
