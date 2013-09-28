@@ -88,15 +88,62 @@ it("arrayとstringのreverse", function () {
     assert.equal(sillyReverse(100000), 42);
 });
 
+/*
+    このdispatchを使うと以下のようなswitchで書いてたケースを違う方法で表せる
+ */
 function performCommandHardcoded(command) {
     var result;
     switch (command.type) {
         case 'notify':
+            result = notify(command.message);
             break;
         case 'join':
+            result = changeView(command.target);
             break;
         default :
+            alert(command.type);
             break;
     }
     return result;
 }
+
+/*
+    これをdispatch と ``isa`` のようなものを使えば、
+    switchのようなパターンを使わないで実現出来る
+ */
+function isa(type, action) {
+    return function (obj) {
+        if (type === obj.type) {
+            return action(obj);
+        }
+    };
+}
+
+/*
+    switchのように、上から `notify` `join` `defaults` という感じで実行出来る
+
+    またdispatchは値が返ってきた時点で止まるのでbreakと同じような感じになる
+ */
+var performCommand = dispatch(
+    isa('notify', function (obj) {
+    return notify(obj.message);
+}), isa('join', function (obj) {
+    return changeView(obj.target)
+}), function (obj) {
+    alert(obj.type);
+});
+
+/*
+
+# The Essence of Functional Composition
+
+    Mutation は LowLevelな操作である
+
+    "Functions are quanta of abstraction,"
+
+    Mutationは必要なときは確かにあるが、Low-LevelなAPIであるべき。
+
+    ![An “evolved” programmer knows when to use the right tool](evolved.png)
+
+ */
+
